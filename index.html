@@ -6,1452 +6,461 @@
 <title>Rocket Avionics Simulator</title>
 <style>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+margin: 0;
+padding: 0;
+box-sizing: border-box;
 }
 
 body {
-    font-family: 'Consolas', 'Monaco', monospace;
-    background: linear-gradient(135deg, #0c1445 0%, #1a1a2e 100%);
-    color: #e0e0e0;
-    min-height: 100vh;
+font-family: 'Consolas', 'Monaco', monospace;
+background: linear-gradient(135deg, #0c1445 0%, #1a1a2e 100%);
+color: #e0e0e0;
+min-height: 100vh;
 }
 
 .container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 300px;
-    grid-template-rows: auto 1fr auto;
-    gap: 20px;
-    padding: 20px;
-    height: 100vh;
+display: grid;
+grid-template-columns: 1fr 1fr 300px;
+grid-template-rows: auto 1fr auto;
+gap: 20px;
+padding: 20px;
+height: 100vh;
 }
 
 .header {
-    grid-column: 1 / -1;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 20px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+grid-column: 1 / -1;
+text-align: center;
+background: rgba(255, 255, 255, 0.05);
+padding: 20px;
+border-radius: 15px;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header h1 {
-    color: #00ffff;
-    font-size: 2.5em;
-    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-    margin-bottom: 10px;
+color: #00ffff;
+font-size: 2.5em;
+text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+margin-bottom: 10px;
 }
 
 .panel {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    padding: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    overflow: hidden;
+background: rgba(255, 255, 255, 0.05);
+border-radius: 15px;
+padding: 20px;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.1);
+overflow: hidden;
 }
 
 .code-panel {
-    display: flex;
-    flex-direction: column;
-    max-height: 100vh;
-    overflow-y: auto;
+display: flex;
+flex-direction: column;
+max-height: 100vh;
+overflow-y: auto;
 }
 
 .sim-panel {
-    display: flex;
-    flex-direction: column;
+display: flex;
+flex-direction: column;
 }
 
 .panel h2 {
-    color: #00ffff;
-    margin-bottom: 15px;
-    font-size: 1.5em;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+color: #00ffff;
+margin-bottom: 15px;
+font-size: 1.5em;
+text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 .code-editor {
-    flex: 1;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 15px;
-    font-family: 'Consolas', monospace;
-    color: #e0e0e0;
-    resize: none;
-    min-height: 300px;
+flex: 1;
+background: rgba(0, 0, 0, 0.3);
+border: 1px solid #333;
+border-radius: 8px;
+padding: 15px;
+font-family: 'Consolas', monospace;
+color: #e0e0e0;
+resize: none;
+min-height: 300px;
 }
 
 .controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin: 15px 0;
-    max-height: 300px;
-    overflow-y: auto;
-    padding-right: 10px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 15px;
+margin: 15px 0;
+max-height: 300px;
+overflow-y: auto;
+padding-right: 10px;
 }
 
 .controls::-webkit-scrollbar {
-    width: 8px;
+width: 8px;
 }
 
 .controls::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+background: rgba(255, 255, 255, 0.1);
+border-radius: 4px;
 }
 
 .controls::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 255, 0.5);
-    border-radius: 4px;
+background: rgba(0, 255, 255, 0.5);
+border-radius: 4px;
 }
 
 .controls::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 255, 0.7);
+background: rgba(0, 255, 255, 0.7);
 }
 
 .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 10px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+margin-bottom: 10px;
 }
 
 .control-group label {
-    color: #00ffff;
-    font-size: 0.9em;
+color: #00ffff;
+font-size: 0.9em;
 }
 
 .control-group input, .control-group select {
-    padding: 10px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    background: rgba(0, 0, 0, 0.3);
-    color: #e0e0e0;
-    font-size: 14px;
-    min-height: 20px;
+padding: 10px;
+border: 1px solid #333;
+border-radius: 5px;
+background: rgba(0, 0, 0, 0.3);
+color: #e0e0e0;
+font-size: 14px;
+min-height: 20px;
 }
 
 .btn {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 10px 5px;
+background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+border: none;
+padding: 12px 24px;
+border-radius: 8px;
+color: white;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s ease;
+margin: 10px 5px;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+transform: translateY(-2px);
+box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
 }
 
 .btn.secondary {
-    background: linear-gradient(45deg, #4ecdc4, #44a08d);
+background: linear-gradient(45deg, #4ecdc4, #44a08d);
 }
 
 .btn.secondary:hover {
-    box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
 }
 
 .results {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 15px;
-    height: 200px;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 0.9em;
-    white-space: pre-line;
+background: rgba(0, 0, 0, 0.3);
+border: 1px solid #333;
+border-radius: 8px;
+padding: 15px;
+height: 200px;
+overflow-y: auto;
+font-family: monospace;
+font-size: 0.9em;
+white-space: pre-line;
 }
 
 .flight-visualization {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 20px;
-    height: 300px;
-    position: relative;
-    overflow: hidden;
+background: rgba(0, 0, 0, 0.3);
+border: 1px solid #333;
+border-radius: 8px;
+padding: 20px;
+height: 300px;
+position: relative;
+overflow: hidden;
 }
 
 .rocket {
-    position: absolute;
-    width: 20px;
-    height: 40px;
-    background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 50%, #ffab91 100%);
-    border-radius: 10px 10px 5px 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    transition: bottom 0.1s ease-out;
+position: absolute;
+width: 20px;
+height: 40px;
+background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 50%, #ffab91 100%);
+border-radius: 10px 10px 5px 5px;
+left: 50%;
+transform: translateX(-50%);
+transition: bottom 0.1s ease-out;
 }
 
 .rocket::before {
-    content: '';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 15px solid #ffa726;
-    opacity: 0;
-    transition: opacity 0.1s;
+content: '';
+position: absolute;
+bottom: -15px;
+left: 50%;
+transform: translateX(-50%);
+width: 0;
+height: 0;
+border-left: 8px solid transparent;
+border-right: 8px solid transparent;
+border-top: 15px solid #ffa726;
+opacity: 0;
+transition: opacity 0.1s;
 }
 
 .rocket.firing::before {
-    opacity: 1;
+opacity: 1;
 }
 
+/* Parachute Styles */
+.parachute {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.3;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+}
 
+.parachute.deployed {
+    opacity: 1;
+    animation: deployChute 0.8s ease-out;
+    z-index: 10;
+}
+
+@keyframes deployChute {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.3);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+.chute-canopy {
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 100%);
+    border-radius: 30px 30px 0 0;
+    position: relative;
+    margin: 0 auto;
+}
+
+.chute-lines {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(180deg, #e0e0e0 0%, #b0b0b0 100%);
+    margin: 0 auto;
+    position: relative;
+}
+
+.chute-lines::before,
+.chute-lines::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 35px;
+    background: linear-gradient(180deg, #e0e0e0 0%, #b0b0b0 100%);
+    top: 0;
+}
+
+.chute-lines::before {
+    left: -15px;
+    transform: rotate(-15deg);
+}
+
+.chute-lines::after {
+    right: -15px;
+    transform: rotate(15deg);
+}
+
+.chute-label {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #00ffff;
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    border: 1px solid #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+}
+
+/* Drogue chute specific styles */
+.drogue-chute .chute-canopy {
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(180deg, #4ecdc4 0%, #44a08d 100%);
+    border-radius: 30px 30px 0 0;
+    border: 2px solid #00ffff;
+}
+
+.drogue-chute .chute-lines {
+    height: 30px;
+}
+
+.drogue-chute .chute-lines::before,
+.drogue-chute .chute-lines::after {
+    height: 25px;
+}
+
+/* Main chute specific styles */
+.main-chute .chute-canopy {
+    width: 100px;
+    height: 50px;
+    background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 100%);
+    border-radius: 50px 50px 0 0;
+    border: 3px solid #ff4444;
+}
+
+/* Parachute movement animation */
+.parachute.deployed .chute-canopy {
+    animation: chuteFloat 3s ease-in-out infinite;
+}
+
+@keyframes chuteFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+.main-chute .chute-lines {
+    height: 50px;
+}
+
+.main-chute .chute-lines::before,
+.main-chute .chute-lines::after {
+    height: 45px;
+}
 
 .ground {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 20px;
-    background: linear-gradient(90deg, #2d5016, #4a7c59);
-    border-radius: 0 0 8px 8px;
-}
-
-.altitude-marker {
-    position: absolute;
-    right: 10px;
-    color: #00ffff;
-    font-size: 0.8em;
-}
-
-.status-display {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.status-item {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    border: 1px solid #333;
-}
-
-.status-item .label {
-    color: #00ffff;
-    font-size: 0.8em;
-    margin-bottom: 5px;
-}
-
-.status-item .value {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-.controls-footer {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.reference-panel {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    padding: 15px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    overflow-y: auto;
-    font-size: 0.85em;
-    grid-row: 2;
-    grid-column: 3;
-}
-
-.reference-panel h3 {
-    color: #00ffff;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-}
-
-.function-ref {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #333;
-    border-radius: 5px;
-    padding: 8px;
-    margin-bottom: 8px;
-    font-family: 'Consolas', monospace;
-}
-
-.function-name {
-    color: #ff6b6b;
-    font-weight: bold;
-}
-
-.function-desc {
-    color: #e0e0e0;
-    font-size: 0.9em;
-    margin-top: 3px;
-}
-
-.code-controls {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.language-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-right: 15px;
-    background: rgba(0, 255, 255, 0.1);
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid rgba(0, 255, 255, 0.3);
-}
-
-.language-selector label {
-    color: #00ffff;
-    font-size: 1em;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-}
-
-.language-selector select {
-    padding: 8px 12px;
-    border: 2px solid #00ffff;
-    border-radius: 5px;
-    background: rgba(0, 0, 0, 0.5);
-    color: #e0e0e0;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    min-width: 120px;
-}
-
-.language-selector select:focus {
-    outline: none;
-    border-color: #00ffff;
-    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-}
-
-.code-btn {
-    background: linear-gradient(45deg, #4ecdc4, #44a08d);
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    color: white;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.code-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 15px rgba(78, 205, 196, 0.4);
-}
-
-.error {
-    color: #ff6b6b;
-}
-
-.success {
-    color: #4ecdc4;
-}
-
-.warning {
-    color: #ffa726;
-}
-</style>
-</head>
-<body>
-<div class="container">
-<div class="header">
-    <h1>🚀 ROCKET AVIONICS SIMULATOR</h1>
-    <p>Test your flight computer code against realistic flight scenarios</p>
+position: absolute;
+@@ -538,16 +406,6 @@
+<h2>Simulation Display</h2>
+<div class="flight-visualization" id="flightViz">
+<div class="rocket" id="rocket"></div>
+        <div class="parachute drogue-chute" id="drogueChute">
+            <div class="chute-canopy"></div>
+            <div class="chute-lines"></div>
+            <div class="chute-label">DROGUE</div>
+        </div>
+        <div class="parachute main-chute" id="mainChute">
+            <div class="chute-canopy"></div>
+            <div class="chute-lines"></div>
+            <div class="chute-label">MAIN</div>
+        </div>
+<div class="ground"></div>
+<div class="altitude-marker" id="altMarker">0ft</div>
 </div>
-
-<div class="panel code-panel">
-    <h2>Flight Computer Code</h2>
-    <div class="code-controls">
-        <div class="language-selector">
-            <label for="languageSelect">🌐 Language:</label>
-            <select id="languageSelect" onchange="changeLanguage()">
-                <option value="javascript">JavaScript</option>
-                <option value="arduino">Arduino (C++)</option>
-                <option value="c">C</option>
-                <option value="cpp">C++</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-            </select>
-        </div>
-        <button class="code-btn" onclick="loadDualDeployExample()">Load Dual Deploy Example</button>
-        <button class="code-btn" onclick="loadSingleDeployExample()">Load Single Deploy Example</button>
-        <button class="code-btn" onclick="clearCode()">Clear Code</button>
-    </div>
-    <textarea class="code-editor" id="userCode" placeholder="// Enter your avionics code here
-// Click 'Load Example' buttons above for sample code
-// Reference panel shows available functions
-
-function flightController() {
-const alt = getAltitude();
-const vel = getVelocity();
-const time = getTime();
-
-// Your flight logic here...
-}"></textarea>
-    
-    <div class="controls">
-        <div class="control-group">
-            <label>Target Apogee (ft)</label>
-            <input type="number" id="maxAlt" value="3280" min="330" max="32800">
-        </div>
-        <div class="control-group">
-            <label>Max Velocity (ft/s)</label>
-            <input type="number" id="maxVel" value="656" min="164" max="1640">
-        </div>
-        <div class="control-group">
-            <label>Parachute System</label>
-            <select id="chuteSystem">
-                <option value="dual">Dual Deploy (Drogue + Main)</option>
-                <option value="single">Single Deploy (Main Only)</option>
-            </select>
-        </div>
-        <div class="control-group" id="mainDeployGroup">
-            <label>Main Deploy Altitude (ft)</label>
-            <input type="number" id="mainDeployAlt" value="800" min="100" max="2000">
-        </div>
-        <div class="control-group">
-            <label>Use Acceleration</label>
-            <select id="useAccel">
-                <option value="true">Yes (Advanced)</option>
-                <option value="false">No (Basic Alt/Vel only)</option>
-            </select>
-        </div>
-        <div class="control-group" id="accelGroup">
-            <label>Max Acceleration (G)</label>
-            <input type="number" id="maxAccel" value="10" min="1" max="30" step="0.5">
-        </div>
-        <div class="control-group">
-            <label>Max G-Force</label>
-            <input type="number" id="maxG" value="15" min="5" max="50" step="0.1">
-        </div>
-    </div>
-</div>
-
-<div class="panel sim-panel">
-    <h2>Simulation Display</h2>
-    <div class="flight-visualization" id="flightViz">
-        <div class="rocket" id="rocket"></div>
-        <div class="ground"></div>
-        <div class="altitude-marker" id="altMarker">0ft</div>
-    </div>
-    
-    <div class="status-display">
-        <div class="status-item">
-            <div class="label">Altitude</div>
-            <div class="value" id="altValue">0 ft</div>
-        </div>
-        <div class="status-item">
-            <div class="label">Velocity</div>
-            <div class="value" id="velValue">0 ft/s</div>
-        </div>
-        <div class="status-item" id="accelDisplay">
-            <div class="label">Acceleration</div>
-            <div class="value" id="accelValue">0 ft/s²</div>
-        </div>
-        <div class="status-item" id="gDisplay">
-            <div class="label">G-Force</div>
-            <div class="value" id="gValue">0 G</div>
-        </div>
-        <div class="status-item">
-            <div class="label">Time</div>
-            <div class="value" id="timeValue">0 s</div>
-        </div>
-        <div class="status-item" id="drogueStatus">
-            <div class="label">Drogue</div>
-            <div class="value" id="drogueValue">Ready</div>
-        </div>
-        <div class="status-item">
-            <div class="label">Main Chute</div>
-            <div class="value" id="mainValue">Ready</div>
-        </div>
-        <div class="status-item">
-            <div class="label">Phase</div>
-            <div class="value" id="phaseValue">Ready</div>
-        </div>
-    </div>
-    
-    <div class="results" id="results"></div>
-</div>
-
-<div class="controls-footer">
-    <button class="btn" onclick="runSingleSim()">Run Single Test</button>
-    <button class="btn secondary" onclick="runAllScenarios()">Test All Scenarios</button>
-    <button class="btn secondary" onclick="clearResults()">Clear Results</button>
-    <button class="btn" onclick="stopSim()">Stop Simulation</button>
-    <button class="btn code-btn" onclick="runExampleAndTest()">Load Example & Run</button>
-</div>
-
-<div class="reference-panel">
-    <h3>📚 Function Reference</h3>
-    
-    <div class="function-ref">
-        <div class="function-name">getAltitude()</div>
-        <div class="function-desc">Returns current altitude in feet</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">getVelocity()</div>
-        <div class="function-desc">Returns current velocity in ft/s<br>
-        Positive = going up, Negative = going down</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">getAcceleration()</div>
-        <div class="function-desc">Returns current acceleration in ft/s²<br>
-        (Only available in Advanced mode)</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">getTime()</div>
-        <div class="function-desc">Returns mission time in seconds</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">getMainDeployAlt()</div>
-        <div class="function-desc">Returns main chute deploy altitude<br>
-        (User-set for dual, apogee for single)</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">deployDrogue()</div>
-        <div class="function-desc">Deploy drogue parachute<br>
-        Returns true if successful<br>
-        (Dual deploy only)</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">deployParachute()</div>
-        <div class="function-desc">Deploy main parachute<br>
-        Returns true if successful</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">fireStage()</div>
-        <div class="function-desc">Fire next stage<br>
-        Returns true if successful</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">log(message)</div>
-        <div class="function-desc">Log message to console<br>
-        Useful for debugging</div>
-    </div>
-    
-    <h3 style="margin-top: 20px;">🔍 Global Variables</h3>
-    
-    <div class="function-ref">
-        <div class="function-name">drogueDeployed</div>
-        <div class="function-desc">Boolean: true if drogue is deployed</div>
-    </div>
-    
-    <div class="function-ref">
-        <div class="function-name">mainDeployed</div>
-        <div class="function-desc">Boolean: true if main chute is deployed</div>
-    </div>
-    
-    <h3 style="margin-top: 20px;">💡 Tips</h3>
-    
-    <div style="background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 5px; font-size: 0.85em;">
-        <strong>Apogee Detection:</strong><br>
-        vel ≤ 5 && alt > 500<br><br>
-        <strong>Safe Descent:</strong><br>
-        vel < -20 (falling fast)<br><br>
-        <strong>Ground Approach:</strong><br>
-        alt < 500 (low altitude)
-    </div>
-</div>
-</div>
-
-<script>
-let simRunning = false;
-let simData = {
-    time: 0,
-    altitude: 0,
-    velocity: 0,
-    acceleration: 0,
-    phase: 'ready',
-    drogueDeployed: false,
-    mainDeployed: false,
-    stagesFired: 0,
-    maxAltitudeReached: 0,
-    apogeeDetected: false,
-    targetApogeeReached: false
-};
-let simInterval;
-let userFunctions = {};
-
-// Simulation parameters
-const GRAVITY = 32.17; // ft/s²
-const DT = 0.1; // simulation time step
-
-// Expose live global flags for user code
-Object.defineProperty(window, 'drogueDeployed', { get: () => simData.drogueDeployed });
-Object.defineProperty(window, 'mainDeployed', { get: () => simData.mainDeployed });
-
-function log(message) {
-    const results = document.getElementById('results');
-    const timestamp = simData.time.toFixed(1);
-    results.innerHTML += `<span class="success">[T+${timestamp}s]</span> ${message}\n`;
-    results.scrollTop = results.scrollHeight;
-}
-
-function logError(message) {
-    const results = document.getElementById('results');
-    results.innerHTML += `<span class="error">[ERROR]</span> ${message}\n`;
-    results.scrollTop = results.scrollHeight;
-}
-
-function logWarning(message) {
-    const results = document.getElementById('results');
-    results.innerHTML += `<span class="warning">[WARNING]</span> ${message}\n`;
-    results.scrollTop = results.scrollHeight;
-}
-
-// API functions available to user code
-function getAltitude() { return simData.altitude; }
-function getVelocity() { return simData.velocity; }
-function getAcceleration() { return simData.acceleration; }
-function getTime() { return simData.time; }
-function getMainDeployAlt() { 
-    const chuteSystem = document.getElementById('chuteSystem').value;
-    if (chuteSystem === 'single') return simData.maxAltitudeReached; // Deploy at apogee for single
-    return parseFloat(document.getElementById('mainDeployAlt').value);
-}
-
+@@ -738,7 +596,6 @@
 function deployParachute() {
-    if (!simData.mainDeployed) {
-        simData.mainDeployed = true;
-        return true;
-    }
-    return false;
+if (!simData.mainDeployed) {
+simData.mainDeployed = true;
+        console.log('Main parachute deployed!');
+return true;
 }
-
-function deployDrogue() {
-    const chuteSystem = document.getElementById('chuteSystem').value;
-    if (chuteSystem === 'single') {
-        log('Warning: No drogue chute in single deploy system');
-        return false;
-    }
-    if (!simData.drogueDeployed) {
-        simData.drogueDeployed = true;
-        return true;
-    }
-    return false;
+return false;
+@@ -752,7 +609,6 @@
 }
-
-function fireStage() {
-    simData.stagesFired++;
-    return true;
+if (!simData.drogueDeployed) {
+simData.drogueDeployed = true;
+        console.log('Drogue parachute deployed!');
+return true;
 }
-
-function resetSimData() {
-    simData = {
-        time: 0,
-        altitude: 0,
-        velocity: 0,
-        acceleration: 0,
-        phase: 'ready',
-        drogueDeployed: false,
-        mainDeployed: false,
-        stagesFired: 0,
-        maxAltitudeReached: 0,
-        apogeeDetected: false,
-        targetApogeeReached: false
-    };
+return false;
+@@ -777,12 +633,6 @@
+apogeeDetected: false,
+targetApogeeReached: false
+};
+    
+    // Reset parachute display
+    const drogueChute = document.getElementById('drogueChute');
+    const mainChute = document.getElementById('mainChute');
+    if (drogueChute) drogueChute.classList.remove('deployed');
+    if (mainChute) mainChute.classList.remove('deployed');
 }
 
 function updateDisplay() {
-    const useAccel = document.getElementById('useAccel').value === 'true';
-    const chuteSystem = document.getElementById('chuteSystem').value;
+@@ -842,30 +692,6 @@
+
+document.getElementById('altMarker').textContent = simData.altitude.toFixed(0) + 'ft';
+document.getElementById('altMarker').style.top = (maxHeight - position) + 'px';
     
-    document.getElementById('altValue').textContent = simData.altitude.toFixed(1) + ' ft';
-    document.getElementById('velValue').textContent = simData.velocity.toFixed(1) + ' ft/s';
+    // Update parachute visibility and positioning
+    const drogueChute = document.getElementById('drogueChute');
+    const mainChute = document.getElementById('mainChute');
     
-    if (useAccel) {
-        document.getElementById('accelValue').textContent = simData.acceleration.toFixed(1) + ' ft/s²';
-        document.getElementById('gValue').textContent = (simData.acceleration / GRAVITY).toFixed(1) + ' G';
-        document.getElementById('accelDisplay').style.display = 'block';
-        document.getElementById('gDisplay').style.display = 'block';
+    // Position parachutes above the rocket
+    const chuteOffset = 80; // Distance above rocket
+    const drogueOffset = 60; // Distance above rocket for drogue
+    
+    if (simData.drogueDeployed && chuteSystem === 'dual') {
+        drogueChute.classList.add('deployed');
+        drogueChute.style.bottom = (20 + position + drogueOffset) + 'px';
+        console.log('Drogue chute displayed at bottom:', (20 + position + drogueOffset) + 'px');
     } else {
-        document.getElementById('accelDisplay').style.display = 'none';
-        document.getElementById('gDisplay').style.display = 'none';
+        drogueChute.classList.remove('deployed');
     }
     
-    // Update parachute status
-    if (chuteSystem === 'dual') {
-        document.getElementById('drogueStatus').style.display = 'block';
-        document.getElementById('drogueValue').textContent = simData.drogueDeployed ? 'DEPLOYED' : 'Ready';
-        document.getElementById('drogueValue').style.color = simData.drogueDeployed ? '#4ecdc4' : '#e0e0e0';
+    if (simData.mainDeployed) {
+        mainChute.classList.add('deployed');
+        mainChute.style.bottom = (20 + position + chuteOffset) + 'px';
+        console.log('Main chute displayed at bottom:', (20 + position + chuteOffset) + 'px');
     } else {
-        document.getElementById('drogueStatus').style.display = 'none';
+        mainChute.classList.remove('deployed');
     }
-    
-    document.getElementById('mainValue').textContent = simData.mainDeployed ? 'DEPLOYED' : 'Ready';
-    document.getElementById('mainValue').style.color = simData.mainDeployed ? '#4ecdc4' : '#e0e0e0';
-    
-    document.getElementById('timeValue').textContent = simData.time.toFixed(1) + ' s';
-    
-    // Show phase with target apogee indicator
-    let phaseText = simData.phase;
-    if (simData.targetApogeeReached) {
-        phaseText += ' (Target Reached)';
-    }
-    document.getElementById('phaseValue').textContent = phaseText;
-    
-    // Update rocket position
-    const rocket = document.getElementById('rocket');
-    const viz = document.getElementById('flightViz');
-    const maxHeight = viz.clientHeight - 60; // Account for ground and rocket height
-    const maxAlt = parseFloat(document.getElementById('maxAlt').value);
-    const position = Math.min((simData.altitude / maxAlt) * maxHeight, maxHeight);
-    
-    rocket.style.bottom = (20 + position) + 'px';
-    rocket.classList.toggle('firing', simData.acceleration > 0 && useAccel);
-    
-    // Change rocket color when target apogee is reached
-    if (simData.targetApogeeReached) {
-        rocket.style.backgroundColor = '#ff6b6b'; // Red color to indicate target reached
-    } else {
-        rocket.style.backgroundColor = ''; // Reset to default
-    }
-    
-    document.getElementById('altMarker').textContent = simData.altitude.toFixed(0) + 'ft';
-    document.getElementById('altMarker').style.top = (maxHeight - position) + 'px';
 }
 
 function parseUserCode() {
-    const code = document.getElementById('userCode').value;
-    try {
-        // Create a safe execution context
-        const wrappedCode = `
-            ${code}
-            return {
-                flightController: typeof flightController !== 'undefined' ? flightController : null
-            };
-        `;
-        
-        const func = new Function(
-            'getAltitude', 'getVelocity', 'getAcceleration', 'getTime',
-            'deployParachute', 'deployDrogue', 'fireStage', 'log',
-            wrappedCode
-        );
-        
-        userFunctions = func(
-            getAltitude, getVelocity, getAcceleration, getTime,
-            deployParachute, deployDrogue, fireStage, log
-        );
-        
-        return true;
-    } catch (error) {
-        logError('Code parsing error: ' + error.message);
-        return false;
-    }
-}
-
-function generateFlightProfile() {
-    const maxAlt = parseFloat(document.getElementById('maxAlt').value);
-    const maxVel = parseFloat(document.getElementById('maxVel').value);
-    const maxAccelG = parseFloat(document.getElementById('maxAccel').value);
-    const maxG = parseFloat(document.getElementById('maxG').value);
-    
-    // Convert G-force to ft/s²
-    const maxAccelFtS2 = Math.min(maxAccelG * GRAVITY, maxG * GRAVITY);
-    
-    const burnTime = 5 + Math.random() * 10; // 5-15 second burn
-    const coastTime = Math.sqrt(2 * maxAlt / GRAVITY); // Time to reach apogee
-    
-    return {
-        burnTime,
-        coastTime,
-        maxAlt,
-        maxVel,
-        maxAccel: maxAccelFtS2,
-        maxAccelG: maxAccelG
-    };
-}
-
-function simulatePhysics(profile) {
-    const useAccel = document.getElementById('useAccel').value === 'true';
-    const chuteSystem = document.getElementById('chuteSystem').value;
-    
-    // Track maximum altitude reached
-    if (simData.altitude > simData.maxAltitudeReached) {
-        simData.maxAltitudeReached = simData.altitude;
-    }
-    
-    // Detect apogee (when velocity becomes very small/negative after powered flight)
-    if (!simData.apogeeDetected && simData.velocity <= 5 && simData.time > profile.burnTime) {
-        simData.apogeeDetected = true;
-        log(`Apogee detected at ${simData.altitude.toFixed(1)}ft`);
-    }
-    
-    // Check if target apogee altitude has been reached
-    const targetApogee = parseFloat(document.getElementById('maxAlt').value);
-    if (simData.altitude >= targetApogee && !simData.targetApogeeReached) {
-        simData.targetApogeeReached = true;
+@@ -938,10 +764,11 @@
+const targetApogee = parseFloat(document.getElementById('maxAlt').value);
+if (simData.altitude >= targetApogee && !simData.targetApogeeReached) {
+simData.targetApogeeReached = true;
         simData.phase = 'Descent';
-        log(`Target apogee altitude of ${targetApogee}ft reached! Starting descent.`);
-        // Force immediate descent by setting velocity to negative
-        if (simData.velocity > 0) {
+log(`Target apogee altitude of ${targetApogee}ft reached! Starting descent.`);
+// Force immediate descent by setting velocity to negative
+if (simData.velocity > 0) {
+            simData.velocity = -1; // Start descending very gradually
             simData.velocity = -0.5; // Start descending extremely gradually
-        }
-    }
-    
-    if (useAccel) {
-        // Full physics with acceleration
-        if (simData.time < profile.burnTime) {
-            // Powered flight - accelerate to max velocity quickly
-            simData.phase = 'Powered Flight';
-            const thrustAccel = profile.maxAccel;
-            simData.acceleration = thrustAccel - GRAVITY;
-            simData.velocity += simData.acceleration * DT;
-            simData.altitude += simData.velocity * DT;
-            
-        } else {
-            // After burnout - only gravity and drag
-            if (simData.velocity > 0 && !simData.targetApogeeReached) {
-                // Still going up (coasting) until target apogee is reached
-                simData.phase = 'Coasting';
-                simData.acceleration = -GRAVITY;
-                simData.velocity += simData.acceleration * DT;
-                simData.altitude += simData.velocity * DT;
-                
-            } else {
-                // Coming down - either naturally or after reaching target apogee
-                simData.phase = 'Descent';
-                let dragAccel = 0;
-                
-                // Force descent if target apogee reached
-                if (simData.targetApogeeReached && simData.velocity >= 0) {
+}
+}
+
+@@ -971,7 +798,7 @@
+
+// Force descent if target apogee reached
+if (simData.targetApogeeReached && simData.velocity >= 0) {
+                    simData.velocity = -1; // Force very gradual descent
                     simData.velocity = -0.5; // Force extremely gradual descent
-                }
-                
-                if (simData.mainDeployed) {
-                    // Main chute deployed - high drag
-                    dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.15, 250);
-                } else if (simData.drogueDeployed && chuteSystem === 'dual') {
-                    // Drogue deployed - moderate drag
-                    dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.03, 100);
-                }
-                
-                simData.acceleration = -GRAVITY + dragAccel;
-                simData.velocity += simData.acceleration * DT;
-                simData.altitude += simData.velocity * DT;
-            }
-        }
-    } else {
-        // Simplified physics - realistic flight profile
-        if (simData.time < profile.burnTime) {
-            // Powered flight - reach max velocity quickly
-            simData.phase = 'Powered Flight';
-            const velocityProgress = Math.min(simData.time / (profile.burnTime * 0.3), 1); // Reach max vel in 30% of burn time
-            const targetVel = profile.maxVel * velocityProgress;
-            simData.velocity = targetVel - GRAVITY * simData.time;
-            simData.altitude += simData.velocity * DT;
-            simData.acceleration = 0;
-            
-        } else {
-            // Post-burnout physics
-            if (simData.velocity > 0 && !simData.targetApogeeReached) {
-                // Coasting up - decelerate due to gravity until target apogee is reached
-                simData.phase = 'Coasting';
-                simData.velocity -= GRAVITY * DT;
-                simData.altitude += simData.velocity * DT;
-                simData.acceleration = 0;
-                
-            } else {
-                // Coming down - terminal velocity approach (either naturally or after target apogee)
-                simData.phase = 'Descent';
-                
-                // Force descent if target apogee reached
-                if (simData.targetApogeeReached && simData.velocity >= 0) {
+}
+
+if (simData.mainDeployed) {
+@@ -1013,7 +840,7 @@
+
+// Force descent if target apogee reached
+if (simData.targetApogeeReached && simData.velocity >= 0) {
+                    simData.velocity = -1; // Force very gradual descent
                     simData.velocity = -0.5; // Force extremely gradual descent
-                }
-                
-                let terminalVel = -164; // Free fall terminal velocity
-                
-                if (simData.mainDeployed) {
-                    terminalVel = -20; // Main chute terminal velocity
-                } else if (simData.drogueDeployed && chuteSystem === 'dual') {
-                    terminalVel = -80; // Drogue terminal velocity
-                }
-                
-                // Gradually approach terminal velocity
-                const velDiff = terminalVel - simData.velocity;
+}
+
+let terminalVel = -164; // Free fall terminal velocity
+@@ -1026,7 +853,7 @@
+
+// Gradually approach terminal velocity
+const velDiff = terminalVel - simData.velocity;
+                simData.velocity += velDiff * 0.01; // Very gradual approach for very smooth descent
                 simData.velocity += velDiff * 0.005; // Extremely gradual approach for very smooth descent
-                simData.altitude += simData.velocity * DT;
-                simData.acceleration = 0;
-            }
-        }
-    }
-    
-    // Ground collision
-    if (simData.altitude <= 0) {
-        simData.altitude = 0;
-        simData.velocity = 0;
-        simData.acceleration = 0;
-        simData.phase = 'Landed';
-        log(`Landed! Max altitude reached: ${simData.maxAltitudeReached.toFixed(1)}ft`);
-        return false; // End simulation
-    }
-    
-    simData.time += DT;
-    return true;
+simData.altitude += simData.velocity * DT;
+simData.acceleration = 0;
 }
-
-function runSingleSim() {
-    if (simRunning) {
-        logWarning('Simulation already running');
-        return;
-    }
-    
-    if (!parseUserCode()) return;
-    
-    resetSimData();
-    simRunning = true;
-    
-    const profile = generateFlightProfile();
-    log(`Starting simulation - Target: ${profile.maxAlt}ft, Max Accel: ${profile.maxAccelG.toFixed(1)}G (${profile.maxAccel.toFixed(1)}ft/s²)`);
-    
-    simInterval = setInterval(() => {
-        if (!simulatePhysics(profile)) {
-            stopSim();
-            log(`Flight ended - Max altitude: ${simData.maxAltitudeReached.toFixed(1)}ft`);
-            return;
-        }
-        
-        // Run user flight controller
-        if (userFunctions.flightController) {
-            try {
-                userFunctions.flightController();
-            } catch (error) {
-                logError('Flight controller error: ' + error.message);
-            }
-        }
-        
-        updateDisplay();
-        
-        // Safety timeout
-        if (simData.time > 120) {
-            stopSim();
-            logWarning('Simulation timed out after 120 seconds');
-        }
-    }, 50); // 20 FPS
-}
-
-function runAllScenarios() {
-    if (simRunning) {
-        logWarning('Simulation already running');
-        return;
-    }
-    
-    if (!parseUserCode()) return;
-    
-    const scenarios = [
-        { alt: 1640, vel: 492, accel: 5, desc: 'Low altitude test' },
-        { alt: 3280, vel: 656, accel: 10, desc: 'Standard flight' },
-        { alt: 6560, vel: 984, accel: 15, desc: 'High altitude test' },
-        { alt: 2624, vel: 328, accel: 20, desc: 'High acceleration test' },
-        { alt: 4920, vel: 820, accel: 7.5, desc: 'Long coast phase' }
-    ];
-    
-    log('Running comprehensive scenario testing...');
-    
-    let index = 0;
-    const runNext = () => {
-        if (index >= scenarios.length) return;
-        const scenario = scenarios[index++];
-        document.getElementById('maxAlt').value = scenario.alt;
-        document.getElementById('maxVel').value = scenario.vel;
-        document.getElementById('maxAccel').value = scenario.accel;
-        
-        log(`\n--- Scenario ${index}: ${scenario.desc} ---`);
-        runSingleSim();
-        
-        const waitForEnd = setInterval(() => {
-            if (!simRunning) {
-                clearInterval(waitForEnd);
-                setTimeout(runNext, 300);
-            }
-        }, 200);
-    };
-    
-    runNext();
-}
-
-function stopSim() {
-    if (simInterval) {
-        clearInterval(simInterval);
-        simInterval = null;
-    }
-    simRunning = false;
-    if (simData.phase !== 'Landed') {
-        simData.phase = 'Stopped';
-    }
-    updateDisplay();
-}
-
-function clearResults() {
-    document.getElementById('results').innerHTML = '';
-}
-
-
-
-function runExampleAndTest() {
-    const chuteSystem = document.getElementById('chuteSystem').value;
-    if (chuteSystem === 'dual') {
-        loadDualDeployExample();
-    } else {
-        loadSingleDeployExample();
-    }
-    
-    // Wait a moment for the code to load, then run
-    setTimeout(() => {
-        runSingleSim();
-    }, 500);
-}
-
-// Add event listeners for configuration changes
-document.getElementById('useAccel').addEventListener('change', function() {
-    const accelGroup = document.getElementById('accelGroup');
-    if (this.value === 'true') {
-        accelGroup.style.display = 'flex';
-    } else {
-        accelGroup.style.display = 'none';
-    }
-    updateDisplay();
-});
-
-document.getElementById('chuteSystem').addEventListener('change', function() {
-    const mainDeployGroup = document.getElementById('mainDeployGroup');
-    if (this.value === 'dual') {
-        mainDeployGroup.style.display = 'flex';
-    } else {
-        mainDeployGroup.style.display = 'none';
-    }
-    updateDisplay();
-});
-
-// Initialize display with proper visibility
-setTimeout(() => {
-    const useAccel = document.getElementById('useAccel').value === 'true';
-    const chuteSystem = document.getElementById('chuteSystem').value;
-    
-    const accelGroup = document.getElementById('accelGroup');
-    if (useAccel) {
-        accelGroup.style.display = 'flex';
-    } else {
-        accelGroup.style.display = 'none';
-    }
-    
-    const mainDeployGroup = document.getElementById('mainDeployGroup');
-    if (chuteSystem === 'dual') {
-        mainDeployGroup.style.display = 'flex';
-    } else {
-        mainDeployGroup.style.display = 'none';
-    }
-    
-    updateDisplay();
-}, 100);
-
-// Language-specific templates and functions
-const languageTemplates = {
-    javascript: {
-        dualDeploy: `// Dual Deploy Flight Controller Example (JavaScript)
-function flightController() {
-    const alt = getAltitude();
-    const vel = getVelocity();
-    const time = getTime();
-
-    // Deploy drogue at apogee (velocity near zero after coasting)
-    if (vel <= 5 && alt > 500 && !drogueDeployed && time > 10) {
-        deployDrogue();
-        log('Drogue deployed at apogee: ' + alt.toFixed(1) + 'ft');
-    }
-
-    // Deploy main chute at user-defined altitude
-    if (alt < getMainDeployAlt() && vel < -20 && !mainDeployed && drogueDeployed) {
-        deployParachute();
-        log('Main chute deployed at ' + alt.toFixed(1) + 'ft');
-    }
-
-    // Safety backup - deploy main if too low
-    if (alt < 400 && !mainDeployed && time > 20) {
-        deployParachute();
-        log('SAFETY: Emergency main deployment at ' + alt.toFixed(1) + 'ft');
-    }
-}`,
-        singleDeploy: `// Single Deploy Flight Controller Example (JavaScript)
-function flightController() {
-    const alt = getAltitude();
-    const vel = getVelocity();
-    const time = getTime();
-
-    // Deploy single parachute at apogee
-    if (vel <= 5 && alt > 500 && !mainDeployed && time > 10) {
-        deployParachute();
-        log('Parachute deployed at apogee: ' + alt.toFixed(1) + 'ft');
-    }
-
-    // Backup deployment based on time
-    if (time > 25 && !mainDeployed) {
-        deployParachute();
-        log('SAFETY: Time-based deployment at T+' + time.toFixed(1) + 's');
-    }
-}`,
-        clear: `// Enter your avionics code here (JavaScript)
-// Use the reference panel for available functions
-
-function flightController() {
-    const alt = getAltitude();
-    const vel = getVelocity();
-    const time = getTime();
-
-    // Your flight logic here...
-}`
-    },
-    arduino: {
-        dualDeploy: `// Dual Deploy Flight Controller Example (Arduino C++)
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy drogue at apogee (velocity near zero after coasting)
-    if (vel <= 5.0 && alt > 500.0 && !drogueDeployed && time > 10.0) {
-        deployDrogue();
-        log("Drogue deployed at apogee: " + String(alt, 1) + "ft");
-    }
-
-    // Deploy main chute at user-defined altitude
-    if (alt < getMainDeployAlt() && vel < -20.0 && !mainDeployed && drogueDeployed) {
-        deployParachute();
-        log("Main chute deployed at " + String(alt, 1) + "ft");
-    }
-
-    // Safety backup - deploy main if too low
-    if (alt < 400.0 && !mainDeployed && time > 20.0) {
-        deployParachute();
-        log("SAFETY: Emergency main deployment at " + String(alt, 1) + "ft");
-    }
-}`,
-        singleDeploy: `// Single Deploy Flight Controller Example (Arduino C++)
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy single parachute at apogee
-    if (vel <= 5.0 && alt > 500.0 && !mainDeployed && time > 10.0) {
-        deployParachute();
-        log("Parachute deployed at apogee: " + String(alt, 1) + "ft");
-    }
-
-    // Backup deployment based on time
-    if (time > 25.0 && !mainDeployed) {
-        deployParachute();
-        log("SAFETY: Time-based deployment at T+" + String(time, 1) + "s");
-    }
-}`,
-        clear: `// Enter your avionics code here (Arduino C++)
-// Use the reference panel for available functions
-
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Your flight logic here...
-}`
-    },
-    c: {
-        dualDeploy: `// Dual Deploy Flight Controller Example (C)
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy drogue at apogee (velocity near zero after coasting)
-    if (vel <= 5.0f && alt > 500.0f && !drogueDeployed && time > 10.0f) {
-        deployDrogue();
-        log("Drogue deployed at apogee: %.1fft", alt);
-    }
-
-    // Deploy main chute at user-defined altitude
-    if (alt < getMainDeployAlt() && vel < -20.0f && !mainDeployed && drogueDeployed) {
-        deployParachute();
-        log("Main chute deployed at %.1fft", alt);
-    }
-
-    // Safety backup - deploy main if too low
-    if (alt < 400.0f && !mainDeployed && time > 20.0f) {
-        deployParachute();
-        log("SAFETY: Emergency main deployment at %.1fft", alt);
-    }
-}`,
-        singleDeploy: `// Single Deploy Flight Controller Example (C)
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy single parachute at apogee
-    if (vel <= 5.0f && alt > 500.0f && !mainDeployed && time > 10.0f) {
-        deployParachute();
-        log("Parachute deployed at apogee: %.1fft", alt);
-    }
-
-    // Backup deployment based on time
-    if (time > 25.0f && !mainDeployed) {
-        deployParachute();
-        log("SAFETY: Time-based deployment at T+%.1fs", time);
-    }
-}`,
-        clear: `// Enter your avionics code here (C)
-// Use the reference panel for available functions
-
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Your flight logic here...
-}`
-    },
-    cpp: {
-        dualDeploy: `// Dual Deploy Flight Controller Example (C++)
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy drogue at apogee (velocity near zero after coasting)
-    if (vel <= 5.0f && alt > 500.0f && !drogueDeployed && time > 10.0f) {
-        deployDrogue();
-        log("Drogue deployed at apogee: " + std::to_string(alt) + "ft");
-    }
-
-    // Deploy main chute at user-defined altitude
-    if (alt < getMainDeployAlt() && vel < -20.0f && !mainDeployed && drogueDeployed) {
-        deployParachute();
-        log("Main chute deployed at " + std::to_string(alt) + "ft");
-    }
-
-    // Safety backup - deploy main if too low
-    if (alt < 400.0f && !mainDeployed && time > 20.0f) {
-        deployParachute();
-        log("SAFETY: Emergency main deployment at " + std::to_string(alt) + "ft");
-    }
-}`,
-        singleDeploy: `// Single Deploy Flight Controller Example (C++)
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy single parachute at apogee
-    if (vel <= 5.0f && alt > 500.0f && !mainDeployed && time > 10.0f) {
-        deployParachute();
-        log("Parachute deployed at apogee: " + std::to_string(alt) + "ft");
-    }
-
-    // Backup deployment based on time
-    if (time > 25.0f && !mainDeployed) {
-        deployParachute();
-        log("SAFETY: Time-based deployment at T+" + std::to_string(time) + "s");
-    }
-}`,
-        clear: `// Enter your avionics code here (C++)
-// Use the reference panel for available functions
-
-void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Your flight logic here...
-}`
-    },
-    python: {
-        dualDeploy: `# Dual Deploy Flight Controller Example (Python)
-def flightController():
-    alt = getAltitude()
-    vel = getVelocity()
-    time = getTime()
-
-    # Deploy drogue at apogee (velocity near zero after coasting)
-    if vel <= 5 and alt > 500 and not drogueDeployed and time > 10:
-        deployDrogue()
-        log(f"Drogue deployed at apogee: {alt:.1f}ft")
-
-    # Deploy main chute at user-defined altitude
-    if alt < getMainDeployAlt() and vel < -20 and not mainDeployed and drogueDeployed:
-        deployParachute()
-        log(f"Main chute deployed at {alt:.1f}ft")
-
-    # Safety backup - deploy main if too low
-    if alt < 400 and not mainDeployed and time > 20:
-        deployParachute()
-        log(f"SAFETY: Emergency main deployment at {alt:.1f}ft")`,
-        singleDeploy: `# Single Deploy Flight Controller Example (Python)
-def flightController():
-    alt = getAltitude()
-    vel = getVelocity()
-    time = getTime()
-
-    # Deploy single parachute at apogee
-    if vel <= 5 and alt > 500 and not mainDeployed and time > 10:
-        deployParachute()
-        log(f"Parachute deployed at apogee: {alt:.1f}ft")
-
-    # Backup deployment based on time
-    if time > 25 and not mainDeployed:
-        deployParachute()
-        log(f"SAFETY: Time-based deployment at T+{time:.1f}s")`,
-        clear: `# Enter your avionics code here (Python)
-# Use the reference panel for available functions
-
-def flightController():
-    alt = getAltitude()
-    vel = getVelocity()
-    time = getTime()
-
-    # Your flight logic here...
-    pass`
-    },
-    java: {
-        dualDeploy: `// Dual Deploy Flight Controller Example (Java)
-public void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy drogue at apogee (velocity near zero after coasting)
-    if (vel <= 5.0f && alt > 500.0f && !drogueDeployed && time > 10.0f) {
-        deployDrogue();
-        log("Drogue deployed at apogee: " + String.format("%.1f", alt) + "ft");
-    }
-
-    // Deploy main chute at user-defined altitude
-    if (alt < getMainDeployAlt() && vel < -20.0f && !mainDeployed && drogueDeployed) {
-        deployParachute();
-        log("Main chute deployed at " + String.format("%.1f", alt) + "ft");
-    }
-
-    // Safety backup - deploy main if too low
-    if (alt < 400.0f && !mainDeployed && time > 20.0f) {
-        deployParachute();
-        log("SAFETY: Emergency main deployment at " + String.format("%.1f", alt) + "ft");
-    }
-}`,
-        singleDeploy: `// Single Deploy Flight Controller Example (Java)
-public void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Deploy single parachute at apogee
-    if (vel <= 5.0f && alt > 500.0f && !mainDeployed && time > 10.0f) {
-        deployParachute();
-        log("Parachute deployed at apogee: " + String.format("%.1f", alt) + "ft");
-    }
-
-    // Backup deployment based on time
-    if (time > 25.0f && !mainDeployed) {
-        deployParachute();
-        log("SAFETY: Time-based deployment at T+" + String.format("%.1f", time) + "s");
-    }
-}`,
-        clear: `// Enter your avionics code here (Java)
-// Use the reference panel for available functions
-
-public void flightController() {
-    float alt = getAltitude();
-    float vel = getVelocity();
-    float time = getTime();
-
-    // Your flight logic here...
-}`
-    }
-};
-
-function changeLanguage() {
-    const language = document.getElementById('languageSelect').value;
-    const currentCode = document.getElementById('userCode').value;
-    
-    console.log('Language changed to:', language);
-    
-    // Only change if there's no meaningful code (just template)
-    if (currentCode.includes('// Your flight logic here') || currentCode.includes('# Your flight logic here')) {
-        document.getElementById('userCode').value = languageTemplates[language].clear;
-    }
-    
-    log(`Language changed to ${language.toUpperCase()}`);
-}
-
-function loadDualDeployExample() {
-    const language = document.getElementById('languageSelect').value;
-    const exampleCode = languageTemplates[language].dualDeploy;
-    document.getElementById('userCode').value = exampleCode;
-    document.getElementById('chuteSystem').value = 'dual';
-    updateDisplay();
-    log(`${language.toUpperCase()} dual deploy example loaded`);
-}
-
-function loadSingleDeployExample() {
-    const language = document.getElementById('languageSelect').value;
-    const exampleCode = languageTemplates[language].singleDeploy;
-    document.getElementById('userCode').value = exampleCode;
-    document.getElementById('chuteSystem').value = 'single';
-    updateDisplay();
-    log(`${language.toUpperCase()} single deploy example loaded`);
-}
-
-function clearCode() {
-    const language = document.getElementById('languageSelect').value;
-    document.getElementById('userCode').value = languageTemplates[language].clear;
-    log(`${language.toUpperCase()} code editor cleared`);
-}
-
-// Add some example scenarios on load
-setTimeout(() => {
-    log('🚀 Rocket Avionics Simulator Ready!');
-    log('📖 Check the Reference Panel for all available functions');
-    log('🎯 Click "Load Example & Run" for a quick start');
-    log('⚙️ PHYSICS: Realistic flight profile with proper apogee detection');
-    log('🌐 Language selector available - choose JavaScript, Arduino, C, C++, Python, or Java');
-    
-    // Verify language selector is working
-    const langSelect = document.getElementById('languageSelect');
-    if (langSelect) {
-        console.log('Language selector found:', langSelect.value);
-    } else {
-        console.log('Language selector not found!');
-    }
-}, 100);
-</script>
-</body>
-</html>
