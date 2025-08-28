@@ -521,7 +521,8 @@ let simData = {
     mainDeployed: false,
     stagesFired: 0,
     maxAltitudeReached: 0,
-    apogeeDetected: false
+    apogeeDetected: false,
+    targetApogeeReached: false
 };
 let simInterval;
 let userFunctions = {};
@@ -601,7 +602,8 @@ function resetSimData() {
         mainDeployed: false,
         stagesFired: 0,
         maxAltitudeReached: 0,
-        apogeeDetected: false
+        apogeeDetected: false,
+        targetApogeeReached: false
     };
 }
 
@@ -717,6 +719,13 @@ function simulatePhysics(profile) {
         log(`Apogee detected at ${simData.altitude.toFixed(1)}ft`);
     }
     
+    // Check if target apogee altitude has been reached
+    const targetApogee = parseFloat(document.getElementById('maxAlt').value);
+    if (simData.altitude >= targetApogee && !simData.targetApogeeReached) {
+        simData.targetApogeeReached = true;
+        log(`Target apogee altitude of ${targetApogee}ft reached! Starting descent.`);
+    }
+    
     if (useAccel) {
         // Full physics with acceleration
         if (simData.time < profile.burnTime) {
@@ -729,17 +738,22 @@ function simulatePhysics(profile) {
             
         } else {
             // After burnout - only gravity and drag
-            if (simData.velocity > 0) {
-                // Still going up (coasting)
+            if (simData.velocity > 0 && !simData.targetApogeeReached) {
+                // Still going up (coasting) until target apogee is reached
                 simData.phase = 'Coasting';
                 simData.acceleration = -GRAVITY;
                 simData.velocity += simData.acceleration * DT;
                 simData.altitude += simData.velocity * DT;
                 
             } else {
-                // Coming down
+                // Coming down - either naturally or after reaching target apogee
                 simData.phase = 'Descent';
                 let dragAccel = 0;
+                
+                // If target apogee reached but still going up, add extra downward force
+                if (simData.targetApogeeReached && simData.velocity > 0) {
+                    simData.velocity = Math.max(simData.velocity - GRAVITY * DT * 2, 0); // Force descent
+                }
                 
                 if (simData.mainDeployed) {
                     // Main chute deployed - high drag
@@ -767,16 +781,22 @@ function simulatePhysics(profile) {
             
         } else {
             // Post-burnout physics
-            if (simData.velocity > 0) {
-                // Coasting up - decelerate due to gravity
+            if (simData.velocity > 0 && !simData.targetApogeeReached) {
+                // Coasting up - decelerate due to gravity until target apogee is reached
                 simData.phase = 'Coasting';
                 simData.velocity -= GRAVITY * DT;
                 simData.altitude += simData.velocity * DT;
                 simData.acceleration = 0;
                 
             } else {
-                // Coming down - terminal velocity approach
+                // Coming down - terminal velocity approach (either naturally or after target apogee)
                 simData.phase = 'Descent';
+                
+                // If target apogee reached but still going up, force descent
+                if (simData.targetApogeeReached && simData.velocity > 0) {
+                    simData.velocity = Math.max(simData.velocity - GRAVITY * DT * 2, 0); // Force descent
+                }
+                
                 let terminalVel = -164; // Free fall terminal velocity
                 
                 if (simData.mainDeployed) {
