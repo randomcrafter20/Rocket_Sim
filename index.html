@@ -211,6 +211,135 @@ body {
     opacity: 1;
 }
 
+/* Parachute Styles */
+.parachute {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+}
+
+.parachute.deployed {
+    opacity: 1;
+    animation: deployChute 0.8s ease-out;
+}
+
+@keyframes deployChute {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.3);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+.chute-canopy {
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 100%);
+    border-radius: 30px 30px 0 0;
+    position: relative;
+    margin: 0 auto;
+}
+
+.chute-lines {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(180deg, #e0e0e0 0%, #b0b0b0 100%);
+    margin: 0 auto;
+    position: relative;
+}
+
+.chute-lines::before,
+.chute-lines::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 35px;
+    background: linear-gradient(180deg, #e0e0e0 0%, #b0b0b0 100%);
+    top: 0;
+}
+
+.chute-lines::before {
+    left: -15px;
+    transform: rotate(-15deg);
+}
+
+.chute-lines::after {
+    right: -15px;
+    transform: rotate(15deg);
+}
+
+.chute-label {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ffff;
+    font-size: 0.7em;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+/* Drogue chute specific styles */
+.drogue-chute .chute-canopy {
+    width: 40px;
+    height: 20px;
+    background: linear-gradient(180deg, #4ecdc4 0%, #44a08d 100%);
+    border-radius: 20px 20px 0 0;
+}
+
+.drogue-chute .chute-lines {
+    height: 30px;
+}
+
+.drogue-chute .chute-lines::before,
+.drogue-chute .chute-lines::after {
+    height: 25px;
+}
+
+/* Main chute specific styles */
+.main-chute .chute-canopy {
+    width: 80px;
+    height: 40px;
+    background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 100%);
+    border-radius: 40px 40px 0 0;
+}
+
+/* Parachute movement animation */
+.parachute.deployed .chute-canopy {
+    animation: chuteFloat 3s ease-in-out infinite;
+}
+
+@keyframes chuteFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+.main-chute .chute-lines {
+    height: 50px;
+}
+
+.main-chute .chute-lines::before,
+.main-chute .chute-lines::after {
+    height: 45px;
+}
+
 .ground {
     position: absolute;
     bottom: 0;
@@ -404,6 +533,16 @@ const time = getTime();
     <h2>Simulation Display</h2>
     <div class="flight-visualization" id="flightViz">
         <div class="rocket" id="rocket"></div>
+        <div class="parachute drogue-chute" id="drogueChute">
+            <div class="chute-canopy"></div>
+            <div class="chute-lines"></div>
+            <div class="chute-label">DROGUE</div>
+        </div>
+        <div class="parachute main-chute" id="mainChute">
+            <div class="chute-canopy"></div>
+            <div class="chute-lines"></div>
+            <div class="chute-label">MAIN</div>
+        </div>
         <div class="ground"></div>
         <div class="altitude-marker" id="altMarker">0ft</div>
     </div>
@@ -631,6 +770,12 @@ function resetSimData() {
         apogeeDetected: false,
         targetApogeeReached: false
     };
+    
+    // Reset parachute display
+    const drogueChute = document.getElementById('drogueChute');
+    const mainChute = document.getElementById('mainChute');
+    if (drogueChute) drogueChute.classList.remove('deployed');
+    if (mainChute) mainChute.classList.remove('deployed');
 }
 
 function updateDisplay() {
@@ -690,6 +835,28 @@ function updateDisplay() {
     
     document.getElementById('altMarker').textContent = simData.altitude.toFixed(0) + 'ft';
     document.getElementById('altMarker').style.top = (maxHeight - position) + 'px';
+    
+    // Update parachute visibility and positioning
+    const drogueChute = document.getElementById('drogueChute');
+    const mainChute = document.getElementById('mainChute');
+    
+    // Position parachutes above the rocket
+    const chuteOffset = 80; // Distance above rocket
+    const drogueOffset = 60; // Distance above rocket for drogue
+    
+    if (simData.drogueDeployed && chuteSystem === 'dual') {
+        drogueChute.classList.add('deployed');
+        drogueChute.style.bottom = (20 + position + drogueOffset) + 'px';
+    } else {
+        drogueChute.classList.remove('deployed');
+    }
+    
+    if (simData.mainDeployed) {
+        mainChute.classList.add('deployed');
+        mainChute.style.bottom = (20 + position + chuteOffset) + 'px';
+    } else {
+        mainChute.classList.remove('deployed');
+    }
 }
 
 function parseUserCode() {
