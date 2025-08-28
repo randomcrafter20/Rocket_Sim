@@ -792,7 +792,7 @@ function simulatePhysics(profile) {
                 simData.altitude += simData.velocity * DT;
                 
             } else {
-                // Coming down - either naturally or after reaching target apogee
+                // Coming down - controlled descent based on parachute deployment
                 simData.phase = 'Descent';
                 let dragAccel = 0;
                 
@@ -802,11 +802,14 @@ function simulatePhysics(profile) {
                 }
                 
                 if (simData.mainDeployed) {
-                    // Main chute deployed - high drag
+                    // Main chute deployed - high drag (very slow descent)
                     dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.15, 250);
                 } else if (simData.drogueDeployed && chuteSystem === 'dual') {
-                    // Drogue deployed - moderate drag
+                    // Drogue deployed - moderate drag (moderate descent)
                     dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.03, 100);
+                } else {
+                    // No parachute deployed - controlled descent instead of free fall
+                    dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.01, 50);
                 }
                 
                 simData.acceleration = -GRAVITY + dragAccel;
@@ -835,7 +838,7 @@ function simulatePhysics(profile) {
                 simData.acceleration = 0;
                 
             } else {
-                // Coming down - terminal velocity approach (either naturally or after target apogee)
+                // Coming down - controlled descent based on parachute deployment
                 simData.phase = 'Descent';
                 
                 // Force descent if target apogee reached
@@ -843,12 +846,15 @@ function simulatePhysics(profile) {
                     simData.velocity = -0.5; // Force extremely gradual descent
                 }
                 
-                let terminalVel = -164; // Free fall terminal velocity
+                let terminalVel;
                 
                 if (simData.mainDeployed) {
-                    terminalVel = -20; // Main chute terminal velocity
+                    terminalVel = -20; // Main chute terminal velocity - very slow descent
                 } else if (simData.drogueDeployed && chuteSystem === 'dual') {
-                    terminalVel = -80; // Drogue terminal velocity
+                    terminalVel = -80; // Drogue terminal velocity - moderate descent
+                } else {
+                    // No parachute deployed - maintain controlled descent instead of free fall
+                    terminalVel = -40; // Controlled descent without parachute (much slower than free fall)
                 }
                 
                 // Gradually approach terminal velocity
