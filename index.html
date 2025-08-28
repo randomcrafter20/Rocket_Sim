@@ -315,22 +315,29 @@ body {
     align-items: center;
     gap: 8px;
     margin-right: 15px;
+    background: rgba(0, 255, 255, 0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
 .language-selector label {
     color: #00ffff;
-    font-size: 0.9em;
+    font-size: 1em;
     font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
 }
 
 .language-selector select {
-    padding: 6px 10px;
-    border: 1px solid #333;
+    padding: 8px 12px;
+    border: 2px solid #00ffff;
     border-radius: 5px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
     color: #e0e0e0;
     font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
+    min-width: 120px;
 }
 
 .language-selector select:focus {
@@ -379,7 +386,7 @@ body {
     <h2>Flight Computer Code</h2>
     <div class="code-controls">
         <div class="language-selector">
-            <label for="languageSelect">Language:</label>
+            <label for="languageSelect">🌐 Language:</label>
             <select id="languageSelect" onchange="changeLanguage()">
                 <option value="javascript">JavaScript</option>
                 <option value="arduino">Arduino (C++)</option>
@@ -1395,6 +1402,8 @@ function changeLanguage() {
     const language = document.getElementById('languageSelect').value;
     const currentCode = document.getElementById('userCode').value;
     
+    console.log('Language changed to:', language);
+    
     // Only change if there's no meaningful code (just template)
     if (currentCode.includes('// Your flight logic here') || currentCode.includes('# Your flight logic here')) {
         document.getElementById('userCode').value = languageTemplates[language].clear;
@@ -1433,7 +1442,15 @@ setTimeout(() => {
     log('📖 Check the Reference Panel for all available functions');
     log('🎯 Click "Load Example & Run" for a quick start');
     log('⚙️ PHYSICS: Realistic flight profile with proper apogee detection');
-    log('🌐 Select your preferred programming language from the dropdown');
+    log('🌐 Language selector available - choose JavaScript, Arduino, C, C++, Python, or Java');
+    
+    // Verify language selector is working
+    const langSelect = document.getElementById('languageSelect');
+    if (langSelect) {
+        console.log('Language selector found:', langSelect.value);
+    } else {
+        console.log('Language selector not found!');
+    }
 }, 100);
 </script>
 </body>
