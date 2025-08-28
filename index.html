@@ -637,7 +637,13 @@ function updateDisplay() {
     document.getElementById('mainValue').style.color = simData.mainDeployed ? '#4ecdc4' : '#e0e0e0';
     
     document.getElementById('timeValue').textContent = simData.time.toFixed(1) + ' s';
-    document.getElementById('phaseValue').textContent = simData.phase;
+    
+    // Show phase with target apogee indicator
+    let phaseText = simData.phase;
+    if (simData.targetApogeeReached) {
+        phaseText += ' (Target Reached)';
+    }
+    document.getElementById('phaseValue').textContent = phaseText;
     
     // Update rocket position
     const rocket = document.getElementById('rocket');
@@ -648,6 +654,13 @@ function updateDisplay() {
     
     rocket.style.bottom = (20 + position) + 'px';
     rocket.classList.toggle('firing', simData.acceleration > 0 && useAccel);
+    
+    // Change rocket color when target apogee is reached
+    if (simData.targetApogeeReached) {
+        rocket.style.backgroundColor = '#ff6b6b'; // Red color to indicate target reached
+    } else {
+        rocket.style.backgroundColor = ''; // Reset to default
+    }
     
     document.getElementById('altMarker').textContent = simData.altitude.toFixed(0) + 'ft';
     document.getElementById('altMarker').style.top = (maxHeight - position) + 'px';
@@ -724,6 +737,10 @@ function simulatePhysics(profile) {
     if (simData.altitude >= targetApogee && !simData.targetApogeeReached) {
         simData.targetApogeeReached = true;
         log(`Target apogee altitude of ${targetApogee}ft reached! Starting descent.`);
+        // Force immediate descent by setting velocity to negative
+        if (simData.velocity > 0) {
+            simData.velocity = -10; // Start descending immediately
+        }
     }
     
     if (useAccel) {
@@ -750,9 +767,9 @@ function simulatePhysics(profile) {
                 simData.phase = 'Descent';
                 let dragAccel = 0;
                 
-                // If target apogee reached but still going up, add extra downward force
-                if (simData.targetApogeeReached && simData.velocity > 0) {
-                    simData.velocity = Math.max(simData.velocity - GRAVITY * DT * 2, 0); // Force descent
+                // Force descent if target apogee reached
+                if (simData.targetApogeeReached && simData.velocity >= 0) {
+                    simData.velocity = -20; // Force immediate descent
                 }
                 
                 if (simData.mainDeployed) {
@@ -792,9 +809,9 @@ function simulatePhysics(profile) {
                 // Coming down - terminal velocity approach (either naturally or after target apogee)
                 simData.phase = 'Descent';
                 
-                // If target apogee reached but still going up, force descent
-                if (simData.targetApogeeReached && simData.velocity > 0) {
-                    simData.velocity = Math.max(simData.velocity - GRAVITY * DT * 2, 0); // Force descent
+                // Force descent if target apogee reached
+                if (simData.targetApogeeReached && simData.velocity >= 0) {
+                    simData.velocity = -20; // Force immediate descent
                 }
                 
                 let terminalVel = -164; // Free fall terminal velocity
