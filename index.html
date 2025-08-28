@@ -56,6 +56,8 @@ body {
 .code-panel {
     display: flex;
     flex-direction: column;
+    max-height: 100vh;
+    overflow-y: auto;
 }
 
 .sim-panel {
@@ -87,12 +89,34 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
     margin: 15px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.controls::-webkit-scrollbar {
+    width: 8px;
+}
+
+.controls::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.controls::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.5);
+    border-radius: 4px;
+}
+
+.controls::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 255, 0.7);
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .control-group label {
@@ -101,11 +125,13 @@ body {
 }
 
 .control-group input, .control-group select {
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #333;
     border-radius: 5px;
     background: rgba(0, 0, 0, 0.3);
     color: #e0e0e0;
+    font-size: 14px;
+    min-height: 20px;
 }
 
 .btn {
@@ -739,7 +765,7 @@ function simulatePhysics(profile) {
         log(`Target apogee altitude of ${targetApogee}ft reached! Starting descent.`);
         // Force immediate descent by setting velocity to negative
         if (simData.velocity > 0) {
-            simData.velocity = -10; // Start descending immediately
+            simData.velocity = -5; // Start descending gradually
         }
     }
     
@@ -769,7 +795,7 @@ function simulatePhysics(profile) {
                 
                 // Force descent if target apogee reached
                 if (simData.targetApogeeReached && simData.velocity >= 0) {
-                    simData.velocity = -20; // Force immediate descent
+                    simData.velocity = -5; // Force gradual descent
                 }
                 
                 if (simData.mainDeployed) {
@@ -811,7 +837,7 @@ function simulatePhysics(profile) {
                 
                 // Force descent if target apogee reached
                 if (simData.targetApogeeReached && simData.velocity >= 0) {
-                    simData.velocity = -20; // Force immediate descent
+                    simData.velocity = -5; // Force gradual descent
                 }
                 
                 let terminalVel = -164; // Free fall terminal velocity
@@ -824,7 +850,7 @@ function simulatePhysics(profile) {
                 
                 // Gradually approach terminal velocity
                 const velDiff = terminalVel - simData.velocity;
-                simData.velocity += velDiff * 0.08; // Gradual approach
+                simData.velocity += velDiff * 0.03; // More gradual approach for smoother descent
                 simData.altitude += simData.velocity * DT;
                 simData.acceleration = 0;
             }
