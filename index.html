@@ -216,7 +216,7 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    opacity: 0;
+    opacity: 0.3;
     transition: opacity 0.5s ease-in-out;
     pointer-events: none;
 }
@@ -224,6 +224,7 @@ body {
 .parachute.deployed {
     opacity: 1;
     animation: deployChute 0.8s ease-out;
+    z-index: 10;
 }
 
 @keyframes deployChute {
@@ -280,24 +281,27 @@ body {
 
 .chute-label {
     position: absolute;
-    top: -25px;
+    top: -30px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     color: #00ffff;
-    font-size: 0.7em;
+    font-size: 0.8em;
     font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 4px 8px;
+    border-radius: 4px;
     white-space: nowrap;
+    border: 1px solid #00ffff;
+    text-shadow: 0 0 5px #00ffff;
 }
 
 /* Drogue chute specific styles */
 .drogue-chute .chute-canopy {
-    width: 40px;
-    height: 20px;
+    width: 60px;
+    height: 30px;
     background: linear-gradient(180deg, #4ecdc4 0%, #44a08d 100%);
-    border-radius: 20px 20px 0 0;
+    border-radius: 30px 30px 0 0;
+    border: 2px solid #00ffff;
 }
 
 .drogue-chute .chute-lines {
@@ -311,10 +315,11 @@ body {
 
 /* Main chute specific styles */
 .main-chute .chute-canopy {
-    width: 80px;
-    height: 40px;
+    width: 100px;
+    height: 50px;
     background: linear-gradient(180deg, #ff6b6b 0%, #ff8e8e 100%);
-    border-radius: 40px 40px 0 0;
+    border-radius: 50px 50px 0 0;
+    border: 3px solid #ff4444;
 }
 
 /* Parachute movement animation */
@@ -733,6 +738,7 @@ function getMainDeployAlt() {
 function deployParachute() {
     if (!simData.mainDeployed) {
         simData.mainDeployed = true;
+        console.log('Main parachute deployed!');
         return true;
     }
     return false;
@@ -746,6 +752,7 @@ function deployDrogue() {
     }
     if (!simData.drogueDeployed) {
         simData.drogueDeployed = true;
+        console.log('Drogue parachute deployed!');
         return true;
     }
     return false;
@@ -847,6 +854,7 @@ function updateDisplay() {
     if (simData.drogueDeployed && chuteSystem === 'dual') {
         drogueChute.classList.add('deployed');
         drogueChute.style.bottom = (20 + position + drogueOffset) + 'px';
+        console.log('Drogue chute displayed at bottom:', (20 + position + drogueOffset) + 'px');
     } else {
         drogueChute.classList.remove('deployed');
     }
@@ -854,6 +862,7 @@ function updateDisplay() {
     if (simData.mainDeployed) {
         mainChute.classList.add('deployed');
         mainChute.style.bottom = (20 + position + chuteOffset) + 'px';
+        console.log('Main chute displayed at bottom:', (20 + position + chuteOffset) + 'px');
     } else {
         mainChute.classList.remove('deployed');
     }
@@ -932,7 +941,7 @@ function simulatePhysics(profile) {
         log(`Target apogee altitude of ${targetApogee}ft reached! Starting descent.`);
         // Force immediate descent by setting velocity to negative
         if (simData.velocity > 0) {
-            simData.velocity = -5; // Start descending gradually
+            simData.velocity = -1; // Start descending very gradually
         }
     }
     
@@ -962,7 +971,7 @@ function simulatePhysics(profile) {
                 
                 // Force descent if target apogee reached
                 if (simData.targetApogeeReached && simData.velocity >= 0) {
-                    simData.velocity = -5; // Force gradual descent
+                    simData.velocity = -1; // Force very gradual descent
                 }
                 
                 if (simData.mainDeployed) {
@@ -1004,7 +1013,7 @@ function simulatePhysics(profile) {
                 
                 // Force descent if target apogee reached
                 if (simData.targetApogeeReached && simData.velocity >= 0) {
-                    simData.velocity = -5; // Force gradual descent
+                    simData.velocity = -1; // Force very gradual descent
                 }
                 
                 let terminalVel = -164; // Free fall terminal velocity
@@ -1017,7 +1026,7 @@ function simulatePhysics(profile) {
                 
                 // Gradually approach terminal velocity
                 const velDiff = terminalVel - simData.velocity;
-                simData.velocity += velDiff * 0.03; // More gradual approach for smoother descent
+                simData.velocity += velDiff * 0.01; // Very gradual approach for very smooth descent
                 simData.altitude += simData.velocity * DT;
                 simData.acceleration = 0;
             }
