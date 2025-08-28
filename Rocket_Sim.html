@@ -211,7 +211,57 @@ body {
     opacity: 1;
 }
 
+.explosion {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #ff6b6b 0%, #ff8e8e 30%, #ffa726 60%, #ff7043 100%);
+    border-radius: 50%;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    animation: explode 1s ease-out forwards;
+    z-index: 10;
+}
 
+@keyframes explode {
+    0% {
+        transform: translateX(-50%) scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-50%) scale(2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(-50%) scale(3);
+        opacity: 0;
+    }
+}
+
+.explosion::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #ffa726 0%, #ff7043 50%, transparent 100%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: shockwave 1.5s ease-out forwards;
+}
+
+@keyframes shockwave {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(4);
+        opacity: 0;
+    }
+}
 
 .ground {
     position: absolute;
@@ -550,7 +600,8 @@ let simData = {
     stagesFired: 0,
     maxAltitudeReached: 0,
     apogeeDetected: false,
-    targetApogeeReached: false
+    targetApogeeReached: false,
+    explosionTriggered: false
 };
 let simInterval;
 let userFunctions = {};
@@ -631,7 +682,8 @@ function resetSimData() {
         stagesFired: 0,
         maxAltitudeReached: 0,
         apogeeDetected: false,
-        targetApogeeReached: false
+        targetApogeeReached: false,
+        explosionTriggered: false
     };
 }
 
@@ -668,10 +720,20 @@ function updateDisplay() {
     
     // Show phase with target apogee indicator
     let phaseText = simData.phase;
-    if (simData.targetApogeeReached) {
+    if (simData.targetApogeeReached && simData.phase !== 'CRASHED!') {
         phaseText += ' (Target Reached)';
     }
     document.getElementById('phaseValue').textContent = phaseText;
+    
+    // Change phase color for crash
+    const phaseElement = document.getElementById('phaseValue');
+    if (simData.phase === 'CRASHED!') {
+        phaseElement.style.color = '#ff6b6b';
+    } else if (simData.phase === 'Landed') {
+        phaseElement.style.color = '#4ecdc4';
+    } else {
+        phaseElement.style.color = '#e0e0e0';
+    }
     
     // Update rocket position
     const rocket = document.getElementById('rocket');
@@ -683,8 +745,10 @@ function updateDisplay() {
     rocket.style.bottom = (20 + position) + 'px';
     rocket.classList.toggle('firing', simData.acceleration > 0 && useAccel);
     
-    // Change rocket color when target apogee is reached
-    if (simData.targetApogeeReached) {
+    // Change rocket color based on status
+    if (simData.phase === 'CRASHED!') {
+        rocket.style.backgroundColor = '#ff0000'; // Bright red for crash
+    } else if (simData.targetApogeeReached) {
         rocket.style.backgroundColor = '#ff6b6b'; // Red color to indicate target reached
     } else {
         rocket.style.backgroundColor = ''; // Reset to default
@@ -792,7 +856,7 @@ function simulatePhysics(profile) {
                 simData.altitude += simData.velocity * DT;
                 
             } else {
-                // Coming down - controlled descent based on parachute deployment
+                // Coming down - either naturally or after reaching target apogee
                 simData.phase = 'Descent';
                 let dragAccel = 0;
                 
@@ -802,14 +866,11 @@ function simulatePhysics(profile) {
                 }
                 
                 if (simData.mainDeployed) {
-                    // Main chute deployed - high drag (very slow descent)
+                    // Main chute deployed - high drag
                     dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.15, 250);
                 } else if (simData.drogueDeployed && chuteSystem === 'dual') {
-                    // Drogue deployed - moderate drag (moderate descent)
+                    // Drogue deployed - moderate drag
                     dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.03, 100);
-                } else {
-                    // No parachute deployed - controlled descent instead of free fall
-                    dragAccel = Math.min(Math.abs(simData.velocity) * simData.velocity * 0.01, 50);
                 }
                 
                 simData.acceleration = -GRAVITY + dragAccel;
@@ -838,7 +899,7 @@ function simulatePhysics(profile) {
                 simData.acceleration = 0;
                 
             } else {
-                // Coming down - controlled descent based on parachute deployment
+                // Coming down - terminal velocity approach (either naturally or after target apogee)
                 simData.phase = 'Descent';
                 
                 // Force descent if target apogee reached
@@ -846,15 +907,12 @@ function simulatePhysics(profile) {
                     simData.velocity = -0.5; // Force extremely gradual descent
                 }
                 
-                let terminalVel;
+                let terminalVel = -164; // Free fall terminal velocity
                 
                 if (simData.mainDeployed) {
-                    terminalVel = -20; // Main chute terminal velocity - very slow descent
+                    terminalVel = -20; // Main chute terminal velocity
                 } else if (simData.drogueDeployed && chuteSystem === 'dual') {
-                    terminalVel = -80; // Drogue terminal velocity - moderate descent
-                } else {
-                    // No parachute deployed - maintain controlled descent instead of free fall
-                    terminalVel = -40; // Controlled descent without parachute (much slower than free fall)
+                    terminalVel = -80; // Drogue terminal velocity
                 }
                 
                 // Gradually approach terminal velocity
@@ -871,9 +929,38 @@ function simulatePhysics(profile) {
         simData.altitude = 0;
         simData.velocity = 0;
         simData.acceleration = 0;
-        simData.phase = 'Landed';
-        log(`Landed! Max altitude reached: ${simData.maxAltitudeReached.toFixed(1)}ft`);
-        return false; // End simulation
+        
+        // Check if any parachute was deployed
+        const chuteSystem = document.getElementById('chuteSystem').value;
+        const hasParachute = simData.mainDeployed || (chuteSystem === 'dual' && simData.drogueDeployed);
+        
+        if (!hasParachute && !simData.explosionTriggered) {
+            // No parachute deployed - trigger explosion
+            simData.explosionTriggered = true;
+            simData.phase = 'CRASHED!';
+            
+            // Create explosion animation
+            const flightViz = document.getElementById('flightViz');
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            flightViz.appendChild(explosion);
+            
+            // Remove explosion element after animation
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.parentNode.removeChild(explosion);
+                }
+            }, 2000);
+            
+            log(`💥 CRASH! Rocket hit the ground at ${Math.abs(simData.velocity).toFixed(1)}ft/s without parachute!`);
+            log(`Max altitude reached: ${simData.maxAltitudeReached.toFixed(1)}ft`);
+            return false; // End simulation
+        } else {
+            // Parachute deployed - safe landing
+            simData.phase = 'Landed';
+            log(`✅ Safe landing! Max altitude reached: ${simData.maxAltitudeReached.toFixed(1)}ft`);
+            return false; // End simulation
+        }
     }
     
     simData.time += DT;
