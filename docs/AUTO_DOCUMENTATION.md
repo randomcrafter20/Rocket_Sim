@@ -1,0 +1,98 @@
+# Auto Documentation
+
+- Repository: randomcrafter20/Rocket_Sim
+- Branch: main
+- Generated: 2026-03-21 19:20:43 UTC
+- Source files scanned: 1
+- Source files updated: 1
+- Function comments added: 84
+
+- LLM-assisted comments added: 84
+- Azure LLM configured: yes
+
+## Commented Functions
+
+- Rocket_Sim.html : alt
+- Rocket_Sim.html : vel
+- Rocket_Sim.html : time
+- Rocket_Sim.html : simRunning
+- Rocket_Sim.html : simData
+- Rocket_Sim.html : userFunctions
+- Rocket_Sim.html : DT
+- Rocket_Sim.html : log
+- Rocket_Sim.html : results
+- Rocket_Sim.html : timestamp
+- Rocket_Sim.html : logError
+- Rocket_Sim.html : results
+- Rocket_Sim.html : logWarning
+- Rocket_Sim.html : results
+- Rocket_Sim.html : getVelocity
+- Rocket_Sim.html : getAcceleration
+- Rocket_Sim.html : getTime
+- Rocket_Sim.html : getMainDeployAlt
+- Rocket_Sim.html : chuteSystem
+- Rocket_Sim.html : deployParachute
+- Rocket_Sim.html : deployDrogue
+- Rocket_Sim.html : chuteSystem
+- Rocket_Sim.html : fireStage
+- Rocket_Sim.html : resetSimData
+- Rocket_Sim.html : updateDisplay
+- Rocket_Sim.html : useAccel
+- Rocket_Sim.html : chuteSystem
+- Rocket_Sim.html : viz
+- Rocket_Sim.html : maxHeight
+- Rocket_Sim.html : maxAlt
+- Rocket_Sim.html : position
+- Rocket_Sim.html : parseUserCode
+- Rocket_Sim.html : code
+- Rocket_Sim.html : func
+- Rocket_Sim.html : generateFlightProfile
+- Rocket_Sim.html : maxAlt
+- Rocket_Sim.html : maxVel
+- Rocket_Sim.html : maxAccelG
+- Rocket_Sim.html : maxG
+- Rocket_Sim.html : burnTime
+- Rocket_Sim.html : coastTime
+- Rocket_Sim.html : simulatePhysics
+- Rocket_Sim.html : useAccel
+- Rocket_Sim.html : chuteSystem
+- Rocket_Sim.html : thrustAccel
+- Rocket_Sim.html : dragAccel
+- Rocket_Sim.html : velocityProgress
+- Rocket_Sim.html : targetVel
+- Rocket_Sim.html : terminalVel
+- Rocket_Sim.html : hasParachute
+- Rocket_Sim.html : explosion
+- Rocket_Sim.html : runSingleSim
+- Rocket_Sim.html : profile
+- Rocket_Sim.html : runAllScenarios
+- Rocket_Sim.html : scenarios
+- Rocket_Sim.html : index
+- Rocket_Sim.html : runNext
+- Rocket_Sim.html : scenario
+- Rocket_Sim.html : waitForEnd
+- Rocket_Sim.html : stopSim
+- Rocket_Sim.html : clearResults
+- Rocket_Sim.html : exampleCode
+- Rocket_Sim.html : flightController
+- Rocket_Sim.html : alt
+- Rocket_Sim.html : vel
+- Rocket_Sim.html : time
+- Rocket_Sim.html : loadSingleDeployExample
+- Rocket_Sim.html : exampleCode
+- Rocket_Sim.html : flightController
+- Rocket_Sim.html : alt
+- Rocket_Sim.html : vel
+- Rocket_Sim.html : time
+- Rocket_Sim.html : clearCode
+- Rocket_Sim.html : alt
+- Rocket_Sim.html : vel
+- Rocket_Sim.html : time
+- Rocket_Sim.html : runExampleAndTest
+- Rocket_Sim.html : chuteSystem
+- Rocket_Sim.html : accelGroup
+- Rocket_Sim.html : mainDeployGroup
+- Rocket_Sim.html : useAccel
+- Rocket_Sim.html : chuteSystem
+- Rocket_Sim.html : accelGroup
+- Rocket_Sim.html : mainDeployGroup

@@ -1,3 +1,6 @@
+// AutoDoc: Initial documentation header added by Code Documentation Tracker.
+// AutoDoc: Review and refine generated comments for this file.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -407,8 +410,11 @@ body {
 // Reference panel shows available functions
 
 function flightController() {
+// Gets the current rocket altitude without side effects.
 const alt = getAltitude();
+// Fetches the rocket’s velocity reading with no additional effects.
 const vel = getVelocity();
+// Gets the current simulation time for use in rocket calculations.
 const time = getTime();
 
 // Your flight logic here...
@@ -588,7 +594,9 @@ const time = getTime();
 </div>
 
 <script>
+// Tracks whether the simulation is running and influences control flow when changed.
 let simRunning = false;
+// Maintains mutable simulation data used and updated throughout the run.
 let simData = {
     time: 0,
     altitude: 0,
@@ -604,30 +612,39 @@ let simData = {
     explosionTriggered: false
 };
 let simInterval;
+// Holds user-defined callback functions with no side effects.
 let userFunctions = {};
 
 // Simulation parameters
 const GRAVITY = 32.17; // ft/s²
+// Defines the simulation time-step constant without side effects.
 const DT = 0.1; // simulation time step
 
 // Expose live global flags for user code
 Object.defineProperty(window, 'drogueDeployed', { get: () => simData.drogueDeployed });
 Object.defineProperty(window, 'mainDeployed', { get: () => simData.mainDeployed });
 
+// Logs the provided message to the output area as a side effect.
 function log(message) {
+    // Stores a DOM element reference for showing updated simulation information.
     const results = document.getElementById('results');
+    // Formats the current simulation time into a string without side effects.
     const timestamp = simData.time.toFixed(1);
     results.innerHTML += `<span class="success">[T+${timestamp}s]</span> ${message}\n`;
     results.scrollTop = results.scrollHeight;
 }
 
+// Logs an error message to the results panel and may modify displayed output.
 function logError(message) {
+    // Stores a DOM element reference for showing updated simulation information.
     const results = document.getElementById('results');
     results.innerHTML += `<span class="error">[ERROR]</span> ${message}\n`;
     results.scrollTop = results.scrollHeight;
 }
 
+// Logs a warning message to the results panel and may alter visible output.
 function logWarning(message) {
+    // Stores a DOM element reference for showing updated simulation information.
     const results = document.getElementById('results');
     results.innerHTML += `<span class="warning">[WARNING]</span> ${message}\n`;
     results.scrollTop = results.scrollHeight;
@@ -635,15 +652,21 @@ function logWarning(message) {
 
 // API functions available to user code
 function getAltitude() { return simData.altitude; }
+// Returns the current simulated velocity without causing side effects.
 function getVelocity() { return simData.velocity; }
+// Returns the rocket's current acceleration without altering simulation data.
 function getAcceleration() { return simData.acceleration; }
+// Provides the current simulation time with no side effects.
 function getTime() { return simData.time; }
+// Retrieves the configured main parachute deployment altitude only.
 function getMainDeployAlt() { 
+    // Retrieves the selected chuteSystem value from the DOM for configuration.
     const chuteSystem = document.getElementById('chuteSystem').value;
     if (chuteSystem === 'single') return simData.maxAltitudeReached; // Deploy at apogee for single
     return parseFloat(document.getElementById('mainDeployAlt').value);
 }
 
+// Initiates parachute deployment and may update simulation state accordingly.
 function deployParachute() {
     if (!simData.mainDeployed) {
         simData.mainDeployed = true;
@@ -652,7 +675,9 @@ function deployParachute() {
     return false;
 }
 
+// Deploys the rocket's drogue chute and updates any related state changes.
 function deployDrogue() {
+    // Retrieves the selected chuteSystem value from the DOM for configuration.
     const chuteSystem = document.getElementById('chuteSystem').value;
     if (chuteSystem === 'single') {
         log('Warning: No drogue chute in single deploy system');
@@ -665,11 +690,13 @@ function deployDrogue() {
     return false;
 }
 
+// Triggers the firing of the next rocket stage and updates simulation state.
 function fireStage() {
     simData.stagesFired++;
     return true;
 }
 
+// Resets all simulation data to initial defaults and clears transient values.
 function resetSimData() {
     simData = {
         time: 0,
@@ -687,8 +714,11 @@ function resetSimData() {
     };
 }
 
+// Updates on-screen simulation metrics to reflect the current rocket state.
 function updateDisplay() {
+    // Reads the useAccel flag from the DOM to determine if acceleration is enabled.
     const useAccel = document.getElementById('useAccel').value === 'true';
+    // Retrieves the selected chuteSystem value from the DOM for configuration.
     const chuteSystem = document.getElementById('chuteSystem').value;
     
     document.getElementById('altValue').textContent = simData.altitude.toFixed(1) + ' ft';
@@ -737,9 +767,13 @@ function updateDisplay() {
     
     // Update rocket position
     const rocket = document.getElementById('rocket');
+    // References the flight visualization DOM element used for rendering the rocket path.
     const viz = document.getElementById('flightViz');
+    // Computes maxHeight from the viz element height to set the visual altitude limit.
     const maxHeight = viz.clientHeight - 60; // Account for ground and rocket height
+    // Reads the maximum altitude value from the input field and converts it to a float.
     const maxAlt = parseFloat(document.getElementById('maxAlt').value);
+    // Computes the rocket's on-screen position based on altitude and height limits.
     const position = Math.min((simData.altitude / maxAlt) * maxHeight, maxHeight);
     
     rocket.style.bottom = (20 + position) + 'px';
@@ -758,7 +792,9 @@ function updateDisplay() {
     document.getElementById('altMarker').style.top = (maxHeight - position) + 'px';
 }
 
+// Parses and validates the user's input code for simulation execution.
 function parseUserCode() {
+    // Retrieves the user's code text from the input field for further processing.
     const code = document.getElementById('userCode').value;
     try {
         // Create a safe execution context
@@ -769,6 +805,7 @@ function parseUserCode() {
             };
         `;
         
+        // Creates a new executable function from user-provided code, potentially unsafe.
         const func = new Function(
             'getAltitude', 'getVelocity', 'getAcceleration', 'getTime',
             'deployParachute', 'deployDrogue', 'fireStage', 'log',
@@ -787,16 +824,23 @@ function parseUserCode() {
     }
 }
 
+// Generates the rocket's flight profile data and updates simulation state.
 function generateFlightProfile() {
+    // Reads the maximum altitude value from the input field and converts it to a float.
     const maxAlt = parseFloat(document.getElementById('maxAlt').value);
+    // Reads the maximum velocity value from the input field and converts it to a float.
     const maxVel = parseFloat(document.getElementById('maxVel').value);
+    // Reads the maximum acceleration in Gs from the input field and converts it to a float.
     const maxAccelG = parseFloat(document.getElementById('maxAccel').value);
+    // Reads the maximum G-force value from the input field and converts it to a float.
     const maxG = parseFloat(document.getElementById('maxG').value);
     
     // Convert G-force to ft/s²
     const maxAccelFtS2 = Math.min(maxAccelG * GRAVITY, maxG * GRAVITY);
     
+    // Generates a random burn time between 5 and 15 seconds for use in the simulation.
     const burnTime = 5 + Math.random() * 10; // 5-15 second burn
+    // Computes the time for the rocket to coast to apogee based on altitude and gravity.
     const coastTime = Math.sqrt(2 * maxAlt / GRAVITY); // Time to reach apogee
     
     return {
@@ -809,8 +853,11 @@ function generateFlightProfile() {
     };
 }
 
+// Simulates the rocket’s physics over time and updates its motion state from the profile.
 function simulatePhysics(profile) {
+    // Reads the useAccel flag from the DOM to determine if acceleration is enabled.
     const useAccel = document.getElementById('useAccel').value === 'true';
+    // Retrieves the selected chuteSystem value from the DOM for configuration.
     const chuteSystem = document.getElementById('chuteSystem').value;
     
     // Track maximum altitude reached
@@ -841,6 +888,7 @@ function simulatePhysics(profile) {
         if (simData.time < profile.burnTime) {
             // Powered flight - accelerate to max velocity quickly
             simData.phase = 'Powered Flight';
+            // Gets the maximum thrust acceleration value from the provided flight profile.
             const thrustAccel = profile.maxAccel;
             simData.acceleration = thrustAccel - GRAVITY;
             simData.velocity += simData.acceleration * DT;
@@ -858,6 +906,7 @@ function simulatePhysics(profile) {
             } else {
                 // Coming down - either naturally or after reaching target apogee
                 simData.phase = 'Descent';
+                // Holds the current drag acceleration value and affects subsequent motion updates.
                 let dragAccel = 0;
                 
                 // Force descent if target apogee reached
@@ -883,7 +932,9 @@ function simulatePhysics(profile) {
         if (simData.time < profile.burnTime) {
             // Powered flight - reach max velocity quickly
             simData.phase = 'Powered Flight';
+            // Computes normalized burn-time progress to shape how quickly velocity ramps up.
             const velocityProgress = Math.min(simData.time / (profile.burnTime * 0.3), 1); // Reach max vel in 30% of burn time
+            // Calculates the current target velocity based on max velocity and progress factor.
             const targetVel = profile.maxVel * velocityProgress;
             simData.velocity = targetVel - GRAVITY * simData.time;
             simData.altitude += simData.velocity * DT;
@@ -907,6 +958,7 @@ function simulatePhysics(profile) {
                     simData.velocity = -0.5; // Force extremely gradual descent
                 }
                 
+                // Stores the preset free‑fall terminal velocity used during descent calculations.
                 let terminalVel = -164; // Free fall terminal velocity
                 
                 if (simData.mainDeployed) {
@@ -932,6 +984,7 @@ function simulatePhysics(profile) {
         
         // Check if any parachute was deployed
         const chuteSystem = document.getElementById('chuteSystem').value;
+        // Indicates whether any parachute is deployed, affecting drag and descent behavior.
         const hasParachute = simData.mainDeployed || (chuteSystem === 'dual' && simData.drogueDeployed);
         
         if (!hasParachute && !simData.explosionTriggered) {
@@ -941,6 +994,7 @@ function simulatePhysics(profile) {
             
             // Create explosion animation
             const flightViz = document.getElementById('flightViz');
+            // Creates a div element for showing a visual explosion effect on the page.
             const explosion = document.createElement('div');
             explosion.className = 'explosion';
             flightViz.appendChild(explosion);
@@ -967,6 +1021,7 @@ function simulatePhysics(profile) {
     return true;
 }
 
+// Runs a single rocket simulation and updates visual and state outputs.
 function runSingleSim() {
     if (simRunning) {
         logWarning('Simulation already running');
@@ -978,6 +1033,7 @@ function runSingleSim() {
     resetSimData();
     simRunning = true;
     
+    // Generates the rocket’s flight profile data used during simulation steps.
     const profile = generateFlightProfile();
     log(`Starting simulation - Target: ${profile.maxAlt}ft, Max Accel: ${profile.maxAccelG.toFixed(1)}G (${profile.maxAccel.toFixed(1)}ft/s²)`);
     
@@ -1007,6 +1063,7 @@ function runSingleSim() {
     }, 50); // 20 FPS
 }
 
+// Executes all predefined simulation scenarios and aggregates their results.
 function runAllScenarios() {
     if (simRunning) {
         logWarning('Simulation already running');
@@ -1015,6 +1072,7 @@ function runAllScenarios() {
     
     if (!parseUserCode()) return;
     
+    // Defines the list of simulation scenarios that drive multi-run executions.
     const scenarios = [
         { alt: 1640, vel: 492, accel: 5, desc: 'Low altitude test' },
         { alt: 3280, vel: 656, accel: 10, desc: 'Standard flight' },
@@ -1025,9 +1083,12 @@ function runAllScenarios() {
     
     log('Running comprehensive scenario testing...');
     
+    // Tracks the current scenario index and increments as simulations proceed.
     let index = 0;
+    // Starts execution of the next simulation step based on the current index.
     const runNext = () => {
         if (index >= scenarios.length) return;
+        // Selects the current scenario and advances the index for subsequent runs.
         const scenario = scenarios[index++];
         document.getElementById('maxAlt').value = scenario.alt;
         document.getElementById('maxVel').value = scenario.vel;
@@ -1036,6 +1097,7 @@ function runAllScenarios() {
         log(`\n--- Scenario ${index}: ${scenario.desc} ---`);
         runSingleSim();
         
+        // Periodically checks for simulation completion and triggers follow-up actions.
         const waitForEnd = setInterval(() => {
             if (!simRunning) {
                 clearInterval(waitForEnd);
@@ -1047,6 +1109,7 @@ function runAllScenarios() {
     runNext();
 }
 
+// Stops the simulation and clears any active intervals or running processes.
 function stopSim() {
     if (simInterval) {
         clearInterval(simInterval);
@@ -1059,16 +1122,22 @@ function stopSim() {
     updateDisplay();
 }
 
+// Clears any existing simulation results from the display without other side effects.
 function clearResults() {
     document.getElementById('results').innerHTML = '';
 }
 
 // Example code loading functions
 function loadDualDeployExample() {
+    // Stores example flight-controller code as a template with no runtime effects.
     const exampleCode = `// Dual Deploy Flight Controller Example
+// Executes the flight‑control logic and may trigger deploy or state changes.
 function flightController() {
+// Gets the current rocket altitude without side effects.
 const alt = getAltitude();
+// Fetches the rocket’s velocity reading with no additional effects.
 const vel = getVelocity();
+// Gets the current simulation time for use in rocket calculations.
 const time = getTime();
 
 // Deploy drogue at apogee (velocity near zero after coasting)
@@ -1095,11 +1164,17 @@ log('SAFETY: Emergency main deployment at ' + alt.toFixed(1) + 'ft');
     log('Dual deploy example loaded');
 }
 
+// Loads the single-deploy example into the interface, updating displayed code.
 function loadSingleDeployExample() {
+    // Stores example flight-controller code as a template with no runtime effects.
     const exampleCode = `// Single Deploy Flight Controller Example
+// Executes the flight‑control logic and may trigger deploy or state changes.
 function flightController() {
+// Gets the current rocket altitude without side effects.
 const alt = getAltitude();
+// Fetches the rocket’s velocity reading with no additional effects.
 const vel = getVelocity();
+// Gets the current simulation time for use in rocket calculations.
 const time = getTime();
 
 // Deploy single parachute at apogee
@@ -1127,13 +1202,17 @@ log('SAFETY: High-speed deployment at ' + vel.toFixed(1) + 'ft/s');
     log('Single deploy example loaded');
 }
 
+// Clears displayed code and resets related UI elements as a side effect.
 function clearCode() {
     document.getElementById('userCode').value = `// Enter your avionics code here
 // Use the reference panel for available functions
 
 function flightController() {
+// Gets the current rocket altitude without side effects.
 const alt = getAltitude();
+// Fetches the rocket’s velocity reading with no additional effects.
 const vel = getVelocity();
+// Gets the current simulation time for use in rocket calculations.
 const time = getTime();
 
 // Your flight logic here...
@@ -1141,7 +1220,9 @@ const time = getTime();
     log('Code editor cleared');
 }
 
+// Runs the example scenario and triggers associated validation tests.
 function runExampleAndTest() {
+    // Retrieves the selected chuteSystem value from the DOM for configuration.
     const chuteSystem = document.getElementById('chuteSystem').value;
     if (chuteSystem === 'dual') {
         loadDualDeployExample();
@@ -1157,6 +1238,7 @@ function runExampleAndTest() {
 
 // Add event listeners for configuration changes
 document.getElementById('useAccel').addEventListener('change', function() {
+    // References the accelGroup DOM element for showing or hiding acceleration options.
     const accelGroup = document.getElementById('accelGroup');
     if (this.value === 'true') {
         accelGroup.style.display = 'flex';
@@ -1167,6 +1249,7 @@ document.getElementById('useAccel').addEventListener('change', function() {
 });
 
 document.getElementById('chuteSystem').addEventListener('change', function() {
+    // References the mainDeployGroup DOM element controlling main chute UI display.
     const mainDeployGroup = document.getElementById('mainDeployGroup');
     if (this.value === 'dual') {
         mainDeployGroup.style.display = 'flex';
@@ -1178,9 +1261,12 @@ document.getElementById('chuteSystem').addEventListener('change', function() {
 
 // Initialize display with proper visibility
 setTimeout(() => {
+    // Reads the useAccel flag from the DOM to determine if acceleration is enabled.
     const useAccel = document.getElementById('useAccel').value === 'true';
+    // Retrieves the selected chuteSystem value from the DOM for configuration.
     const chuteSystem = document.getElementById('chuteSystem').value;
     
+    // References the accelGroup DOM element for showing or hiding acceleration options.
     const accelGroup = document.getElementById('accelGroup');
     if (useAccel) {
         accelGroup.style.display = 'flex';
@@ -1188,6 +1274,7 @@ setTimeout(() => {
         accelGroup.style.display = 'none';
     }
     
+    // References the mainDeployGroup DOM element controlling main chute UI display.
     const mainDeployGroup = document.getElementById('mainDeployGroup');
     if (chuteSystem === 'dual') {
         mainDeployGroup.style.display = 'flex';
